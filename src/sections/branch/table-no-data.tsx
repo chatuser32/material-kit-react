@@ -12,7 +12,7 @@ type TableNoDataProps = {
 export function TableNoData({ searchQuery }: TableNoDataProps) {
   return (
     <TableRow>
-      <TableCell align="center" colSpan={7}>
+      <TableCell align="center" colSpan={9}>
         <Box sx={{ py: 15, textAlign: 'center' }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
             Bulunamadı

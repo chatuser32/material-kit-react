@@ -1,16 +1,9 @@
-import { useState, useCallback } from 'react';
-
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuList from '@mui/material/MenuList';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 import type { BranchProps } from 'src/_mock/branch';
@@ -18,99 +11,86 @@ import type { BranchProps } from 'src/_mock/branch';
 // ----------------------------------------------------------------------
 
 type BranchTableRowProps = {
-  row: BranchProps;
-  selected: boolean;
-  onSelectRow: () => void;
+  branch: BranchProps;
+  onView: (branch: BranchProps) => void;
+  onEdit: (branch: BranchProps) => void;
+  onDelete: (branch: BranchProps) => void;
 };
 
-export function BranchTableRow({ row, selected, onSelectRow }: BranchTableRowProps) {
-  const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+export function BranchTableRow({ 
+  branch, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: BranchTableRowProps) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'inactive':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
 
-  const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    setOpenPopover(event.currentTarget);
-  }, []);
-
-  const handleClosePopover = useCallback(() => {
-    setOpenPopover(null);
-  }, []);
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Aktif';
+      case 'inactive':
+        return 'Pasif';
+      default:
+        return status;
+    }
+  };
 
   return (
-    <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
-        </TableCell>
-
-        <TableCell component="th" scope="row">
-          <Box gap={2} display="flex" alignItems="center">
-            <Avatar alt={row.name} sx={{ backgroundColor: 'primary.main' }}>
-              {row.code}
-            </Avatar>
-
-            <Box>
-              <Box sx={{ typography: 'subtitle2' }}>{row.name}</Box>
-              <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
-                {row.code}
-              </Box>
-            </Box>
-          </Box>
-        </TableCell>
-
-        <TableCell>{row.address}</TableCell>
-
-        <TableCell>{row.phone}</TableCell>
-
-        <TableCell>{row.manager}</TableCell>
-
-        <TableCell>
-          <Label color={row.status === 'active' ? 'success' : 'error'}>
-            {row.status}
-          </Label>
-        </TableCell>
-
-        <TableCell align="center">{row.employeeCount}</TableCell>
-
-        <TableCell align="right">
-          <IconButton onClick={handleOpenPopover}>
-            <Iconify icon="eva:more-vertical-fill" />
+    <TableRow hover>
+      <TableCell>{branch.code}</TableCell>
+      <TableCell>{branch.name}</TableCell>
+      <TableCell>{branch.address}</TableCell>
+      <TableCell>{branch.phone}</TableCell>
+      <TableCell>{branch.manager}</TableCell>
+      <TableCell>
+        <Chip
+          label={getStatusLabel(branch.status)}
+          color={getStatusColor(branch.status)}
+          size="small"
+        />
+      </TableCell>
+      <TableCell align="center">{branch.employeeCount}</TableCell>
+      <TableCell>
+        {new Date(branch.createdAt).toLocaleDateString('tr-TR')}
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" spacing={1}>
+          <IconButton 
+            size="small" 
+            color="primary"
+            onClick={() => onView(branch)}
+            title="Görüntüle"
+          >
+            <Iconify icon="solar:eye-bold" />
           </IconButton>
-        </TableCell>
-      </TableRow>
-
-      <Popover
-        open={!!openPopover}
-        anchorEl={openPopover}
-        onClose={handleClosePopover}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MenuList
-          disablePadding
-          sx={{
-            p: 0.5,
-            gap: 0.5,
-            width: 140,
-            display: 'flex',
-            flexDirection: 'column',
-            [`& .${menuItemClasses.root}`]: {
-              px: 1,
-              gap: 2,
-              borderRadius: 0.75,
-              [`&.${menuItemClasses.selected}`]: { bgcolor: 'action.selected' },
-            },
-          }}
-        >
-          <MenuItem onClick={handleClosePopover}>
+          <IconButton 
+            size="small" 
+            color="info"
+            onClick={() => onEdit(branch)}
+            title="Düzenle"
+          >
             <Iconify icon="solar:pen-bold" />
-            Düzenle
-          </MenuItem>
-
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          </IconButton>
+          <IconButton 
+            size="small" 
+            color="error"
+            onClick={() => onDelete(branch)}
+            title="Sil"
+          >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Sil
-          </MenuItem>
-        </MenuList>
-      </Popover>
-    </>
+          </IconButton>
+        </Stack>
+      </TableCell>
+    </TableRow>
   );
 }

@@ -39,6 +39,21 @@ export function BranchView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const handleView = (branch: BranchProps) => {
+    console.log('Görüntüle:', branch);
+    // Buraya modal açma veya detay sayfasına yönlendirme kodları gelecek
+  };
+
+  const handleEdit = (branch: BranchProps) => {
+    console.log('Düzenle:', branch);
+    // Buraya düzenleme modalı açma kodları gelecek
+  };
+
+  const handleDelete = (branch: BranchProps) => {
+    console.log('Sil:', branch);
+    // Buraya silme onayı modalı açma kodları gelecek
+  };
+
   return (
     <DashboardContent>
       <Box
@@ -62,7 +77,7 @@ export function BranchView() {
 
       <Card>
         <BranchTableToolbar
-          numSelected={table.selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
             setFilterName(event.target.value);
@@ -76,23 +91,17 @@ export function BranchView() {
               <BranchTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={_branches.length}
-                numSelected={table.selected.length}
                 onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    _branches.map((branch) => branch.id)
-                  )
-                }
                 headLabel={[
+                  { id: 'code', label: 'Şube Kodu' },
                   { id: 'name', label: 'Şube Adı' },
                   { id: 'address', label: 'Adres' },
                   { id: 'phone', label: 'Telefon' },
                   { id: 'manager', label: 'Müdür' },
                   { id: 'status', label: 'Durum' },
                   { id: 'employeeCount', label: 'Çalışan Sayısı', align: 'center' },
-                  { id: '' },
+                  { id: 'createdAt', label: 'Oluşturma Tarihi' },
+                  { id: '', label: 'İşlemler' },
                 ]}
               />
               <TableBody>
@@ -104,9 +113,10 @@ export function BranchView() {
                   .map((row) => (
                     <BranchTableRow
                       key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      branch={row}
+                      onView={handleView}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
                     />
                   ))}
 
