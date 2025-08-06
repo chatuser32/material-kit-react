@@ -126,20 +126,38 @@ export function BranchView() {
   }, []);
 
   const handleSubmitForm = useCallback((formData: BranchFormData) => {
+    // Mock şirket verisi (gerçek uygulamada API'den gelir)
+    const mockCompanies = [
+      { id: 1, name: 'ABC Şirketi' },
+      { id: 2, name: 'XYZ Şirketi' },
+      { id: 3, name: 'DEF Şirketi' },
+    ];
+    
+    const selectedCompany = mockCompanies.find(c => c.id === formData.companyId) || mockCompanies[0];
+
     if (editMode && selectedBranch) {
       // Şube güncelleme işlemi
       const updatedBranch: Branch = {
         ...selectedBranch,
-        ...formData,
+        code: formData.code,
+        name: formData.name,
+        address: formData.address,
+        phone: formData.phone,
+        isActive: formData.isActive,
+        company: selectedCompany,
       };
       setBranches(prev => prev.map(b => b.id === selectedBranch.id ? updatedBranch : b));
       showSnackbar(`${formData.name} şubesi başarıyla güncellendi!`, 'success');
     } else {
       // Yeni şube ekleme
       const newBranch: Branch = {
-        id: Math.max(...branches.map(b => b.id)) + 1,
-        ...formData,
-        company: { id: 1, name: 'ABC Şirketi' }, // Mock şirket verisi
+        id: Math.max(...branches.map(b => b.id), 0) + 1,
+        code: formData.code,
+        name: formData.name,
+        address: formData.address,
+        phone: formData.phone,
+        isActive: formData.isActive,
+        company: selectedCompany,
       };
       setBranches(prev => [...prev, newBranch]);
       showSnackbar(`${formData.name} şubesi başarıyla eklendi!`, 'success');

@@ -19,4 +19,5 @@ export interface BranchFormData {
   address: string;
   phone: string;
   isActive: boolean;
+  companyId: number;
 }
